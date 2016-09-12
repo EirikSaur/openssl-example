@@ -1,8 +1,10 @@
 #include <openssl/evp.h>
 #include <openssl/sha.h>
+#include <openssl/md5.h>
 #include <sstream>
 #include <iomanip>
 #include <string>
+
 
 // Note: C-style casts, for instance (int), are used to simplify the source code.
 //       C++ casts, such as static_cast and reinterpret_cast, should otherwise
@@ -22,7 +24,14 @@ public:
 
   /// Return the MD5 (128-bit) hash from input.
   static std::string md5(const std::string &input, size_t iterations = 1) {
-    throw std::logic_error("not yet implemented");
+    std::string hash;
+    hash.resize(128 / 8);
+    MD5((const unsigned char *)input.c_str(), input.size(), (unsigned char *)hash.c_str());
+
+    for (size_t c = 1; c < iterations; ++c)
+      MD5((const unsigned char *)hash.c_str(), hash.size(), (unsigned char *)hash.c_str());
+
+    return hash;
   }
 
   /// Return the SHA-1 (160-bit) hash from input.
